@@ -83,7 +83,7 @@ class Message {
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "$text|" + chatroom.documentID;
+  String toString() => text;
 }
 
 class ChatRoom {
