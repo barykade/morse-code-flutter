@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:morse_code_flutter/chatscreen.dart';
-import 'package:vibrate/vibrate.dart';
 
 void main() => runApp(MyApp());
 
@@ -58,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: _buildBody(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Vibrate.vibrate();
           _displayDialog(context);
         },
         child: Icon(Icons.add),

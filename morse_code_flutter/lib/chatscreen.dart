@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lamp/lamp.dart';
+import 'package:flutter/services.dart';
 
 class ChatScreenStateful extends StatefulWidget {
   
@@ -16,11 +17,11 @@ class ChatScreenStateful extends StatefulWidget {
 
 class ChatScreen extends State {
 
-  final dotTime = 30;
-  final dashTime = 150;
-  final slashTime = 800;
-  final spaceTime = 2000;
-  final sendTime = 4000;
+  static final dotTime = 30;
+  static final dashTime = 150;
+  static final slashTime = 600;
+  static final spaceTime = 2000;
+  static final sendTime = 4000;
 
   String message = "";
   int tapDownTime = 0;
@@ -141,39 +142,48 @@ class ChatScreen extends State {
                 title: Text(message.toString())
             ),
           ),
-          onPressed: () {
-            message.toString().runes.forEach((int rune) async {
-              var character=new String.fromCharCode(rune);
+          onPressed: () async {
+            String messageString = message.toString();
+
+            for (int i = 0; i < messageString.length; i++) {
+              var character = messageString[i];
               if (character == "."){
-                playDot();
-                await new Future.delayed(Duration(milliseconds: dotTime));
+                await playDot();
               }else if (character == "-"){
-                playDash();
-                await new Future.delayed(Duration(milliseconds: dashTime));
+                await playDash();
               }else if (character == "/"){
-                playSlash();
-                await new Future.delayed(Duration(milliseconds: slashTime));
+                await playSlash();
               }
-              await new Future.delayed(Duration(milliseconds: dotTime));
-            });
+            };
           },
         ));
   }
 
+  static const MethodChannel _channel = const MethodChannel('vibrate');
+
+  Duration dotTimeDuration = Duration(milliseconds: dotTime);
   Future playDot() async {
+    print(".");
     Lamp.turnOn();
-    await new Future.delayed(Duration(milliseconds: dotTime));
-    Lamp.turnOff();
+    _channel.invokeMethod('vibrate', {"duration": dotTime});
+    return new Future.delayed(dotTimeDuration).then((_) {
+      return Lamp.turnOff();
+    });
   }
 
+  Duration dashTimeDuration = Duration(milliseconds: dashTime);
   Future playDash() async {
     Lamp.turnOn();
-    await new Future.delayed(Duration(milliseconds: dashTime));
-    Lamp.turnOff();
+    _channel.invokeMethod('vibrate', {"duration": dashTime});
+    return new Future.delayed(dashTimeDuration ).then((_) {
+      return Lamp.turnOff();
+    });
   }
 
+  Duration slashTimeDuration = Duration(milliseconds: slashTime);
   Future playSlash() async {
-    //do nothing.
+    print("/");
+    return new Future.delayed(Duration(milliseconds: slashTime));
   }
 
 }
