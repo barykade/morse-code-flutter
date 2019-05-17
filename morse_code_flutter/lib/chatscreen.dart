@@ -15,7 +15,10 @@ class ChatScreenStateful extends StatefulWidget {
 
 class ChatScreen extends State {
 
+  final dashTime = 120;
+
   String message = "";
+  int tapDownTime = 0;
 
   final ChatRoom chatroom;
 
@@ -27,18 +30,30 @@ class ChatScreen extends State {
     return Scaffold(
       appBar: AppBar(title: Text(chatroom.name)),
       body: _buildBody(context),
-      floatingActionButton: new Container(
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+      floatingActionButton: new GestureDetector(
+        onTapDown: (tapDownDetails) {
+          setState(() {
+            tapDownTime = new DateTime.now().millisecondsSinceEpoch;
+          });
+        },
+        onTapUp: (tapUpDetails) {
+          String character;
+          int tapUpTime = new DateTime.now().millisecondsSinceEpoch;
+          if (tapUpTime - tapDownTime > dashTime){
+            character = "-";
+          }else{
+            character = ".";
+          }
+          setState(() {
+            message = message + character;
+          });
+        },
+        child: new Container(
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
           width: 800.0,
           height: 100.0,
-          child: new RawMaterialButton(
-            elevation: 0.0,
-            fillColor: Colors.blue,
-            onPressed: () {
-              setState(() {
-                message = message + ".";
-              });
-            },
+          child: new Container(
+            color: Colors.blue,
             child: new Text(
               message,
               style: TextStyle(
@@ -47,6 +62,7 @@ class ChatScreen extends State {
               ),
             ),
           ),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
