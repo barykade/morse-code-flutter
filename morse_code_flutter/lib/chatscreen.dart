@@ -12,6 +12,12 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(name)),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () {
+
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
