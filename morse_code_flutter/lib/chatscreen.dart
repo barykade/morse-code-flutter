@@ -15,10 +15,14 @@ class ChatScreenStateful extends StatefulWidget {
 
 class ChatScreen extends State {
 
-  final dashTime = 120;
+  final dashTime = 150;
+  final slashTime = 800;
+  final spaceTime = 2000;
+  final sendTime = 4000;
 
   String message = "";
   int tapDownTime = 0;
+  int tapUpTime = 0;
 
   final ChatRoom chatroom;
 
@@ -35,10 +39,24 @@ class ChatScreen extends State {
           setState(() {
             tapDownTime = new DateTime.now().millisecondsSinceEpoch;
           });
+
+          String character = "";
+          int timeSinceTapUp = tapDownTime - tapUpTime;
+          if (timeSinceTapUp > spaceTime){
+            character = "//";
+          }else if (timeSinceTapUp > slashTime){
+            character = "/";
+          }
+          setState(() {
+            message = message + character;
+          });
         },
         onTapUp: (tapUpDetails) {
+          setState(() {
+            tapUpTime = new DateTime.now().millisecondsSinceEpoch;
+          });
+
           String character;
-          int tapUpTime = new DateTime.now().millisecondsSinceEpoch;
           if (tapUpTime - tapDownTime > dashTime){
             character = "-";
           }else{
