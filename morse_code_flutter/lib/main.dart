@@ -14,8 +14,13 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: Text('ListViews')),
         body: BodyLayout(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: Icon(Icons.add),
+        ),
       ),
     );
+
   }
 }
 
@@ -46,7 +51,7 @@ Widget _myListView(BuildContext context) {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SecondScreen(name: friend,),
+                builder: (context) => Chat(name: friend,),
               ));
         },
       );
@@ -55,32 +60,17 @@ Widget _myListView(BuildContext context) {
 
 }
 
-class SecondScreen extends StatelessWidget {
+class Chat extends StatelessWidget {
 
   final String name;
 
   // receive data from the FirstScreen as a parameter
-  SecondScreen({Key key, @required this.name}) : super(key: key);
+  Chat({Key key, @required this.name}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(name)),
-      body: Center(
-        child: RaisedButton(
-          child: Text(
-            'Go Back',
-            style: TextStyle(fontSize: 24),
-          ),
-          onPressed: () {
-            _goBackToFirstScreen(context);
-          },
-        ),
-      ),
     );
-  }
-
-  void _goBackToFirstScreen(BuildContext context) {
-    Navigator.pop(context);
   }
 }
