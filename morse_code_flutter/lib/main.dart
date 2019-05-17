@@ -1,30 +1,79 @@
-// Copyright 2018 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
-import 'package:sms/sms.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-
-  SmsSender sender = new SmsSender();
-  SmsReceiver receiver = new SmsReceiver();
-
-  static String message = "This is a test message!";
-  static String jakesNumber = "6164506289";
-  List<String> recipents = [jakesNumber];
-
   @override
   Widget build(BuildContext context) {
-    return new GestureDetector(
-      onTap: () => print('tap!'),
-      onLongPress: () => print('long press!')
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'ListViews',
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
+      home: Scaffold(
+        appBar: AppBar(title: Text('ListViews')),
+        body: BodyLayout(),
+      ),
+    );
+  }
+}
+
+class BodyLayout extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return _myListView(context);
+  }
+}
+
+Widget _myListView(BuildContext context) {
+
+  // backing data
+  final friends = ['Jake', 'DJ', 'Tyler'];
+  final messages = ['hey', 'you', 'what\'s your number'];
+  final timeSinceLast = ['15 mins', '6 hrs', 'Thu'];
+
+  return ListView.builder(
+    itemCount: friends.length,
+    itemBuilder: (context, index) {
+      return ListTile(
+        leading: Icon(Icons.wb_sunny),
+        title: Text(friends[index]),
+        subtitle: Text(messages[index]),
+        trailing: Text(timeSinceLast[index]),
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SecondScreen(),
+              ));
+        },
+      );
+    },
+  );
+
+}
+
+class SecondScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Second screen')),
+      body: Center(
+        child: RaisedButton(
+          child: Text(
+            'Go back to first screen',
+            style: TextStyle(fontSize: 24),
+          ),
+          onPressed: () {
+            _goBackToFirstScreen(context);
+          },
+        ),
+      ),
     );
   }
 
-  void _sendSMS(String message, List<String> recipients){
-    sender.sendSms(new SmsMessage(recipents[0], message));
+  void _goBackToFirstScreen(BuildContext context) {
+    Navigator.pop(context);
   }
 }
