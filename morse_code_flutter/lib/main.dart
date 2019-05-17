@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: new Text('SUBMIT'),
                 onPressed: () {
                   Firestore.instance.collection('chatrooms').add(<String, dynamic> {
-                    "name":_textFieldController.text,
+                    "name":_textFieldController.text
                   });
                   _textFieldController.clear();
                   Navigator.of(context).pop();
@@ -71,19 +71,19 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
-        return _buildList(context, snapshot.data.documents);
+        return buildChatRoomWidgets(context, snapshot.data.documents);
       },
     );
   }
 
-  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+  Widget buildChatRoomWidgets(BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView(
       padding: const EdgeInsets.only(top: 20.0),
-      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+      children: snapshot.map((data) => buildChatRoomWidget(context, data)).toList(),
     );
   }
 
-  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+  Widget buildChatRoomWidget(BuildContext context, DocumentSnapshot data) {
     final chatroom = ChatRoom.fromSnapshot(data);
 
     return Padding(
@@ -100,25 +100,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChatScreen(name: chatroom.name),
+                  builder: (context) => ChatScreen(chatroom: chatroom),
                 ));
           },
       ),
     ));
   }
-}
-
-class ChatRoom {
-  final String name;
-  final DocumentReference reference;
-
-  ChatRoom.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['name'] != null),
-        name = map['name'];
-
-  ChatRoom.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
-
-  @override
-  String toString() => "ChatRoom<$name>";
 }
