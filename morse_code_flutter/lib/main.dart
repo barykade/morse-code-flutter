@@ -21,17 +21,48 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  TextEditingController _textFieldController = TextEditingController();
+
+  _displayDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Add new Chat Room'),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(hintText: "Insert Chat Room name"),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text('SUBMIT'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Baby Name Votes')),
       body: _buildBody(context),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _displayDialog(context);
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('baby').snapshots(),
+      stream: Firestore.instance.collection('chatrooms').snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
@@ -60,14 +91,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: ListTile(
           title: Text(record.name),
-          trailing: Text(record.votes.toString()),
+          trailing: Text('test'),
 
           onTap: () => Firestore.instance.runTransaction((transaction) async {
             final freshSnapshot = await transaction.get(record.reference);
             final fresh = Record.fromSnapshot(freshSnapshot);
-
-            await transaction
-                .update(record.reference, {'votes': fresh.votes + 1});
           }),
       ),
     ));
@@ -76,18 +104,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class Record {
   final String name;
-  final int votes;
   final DocumentReference reference;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['name'] != null),
-        assert(map['votes'] != null),
-        name = map['name'],
-        votes = map['votes'];
+        name = map['name'];
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "Record<$name:$votes>";
+  String toString() => "Record<$name>";
 }
