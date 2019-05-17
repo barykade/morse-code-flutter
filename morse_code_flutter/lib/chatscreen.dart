@@ -1,12 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreenStateful extends StatefulWidget {
+  
+  final ChatRoom chatroom;
+
+  ChatScreenStateful({Key key, @required this.chatroom}) : super(key: key);
+  
+  @override
+  ChatScreen createState() {
+    return ChatScreen(chatroom: chatroom);
+  }
+}
+
+class ChatScreen extends State {
+
+  String message = "";
 
   final ChatRoom chatroom;
 
   // receive data from the FirstScreen as a parameter
-  ChatScreen({Key key, @required this.chatroom}) : super(key: key);
+  ChatScreen({@required this.chatroom});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +34,18 @@ class ChatScreen extends StatelessWidget {
           child: new RawMaterialButton(
             elevation: 0.0,
             fillColor: Colors.blue,
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                message = message + ".";
+              });
+            },
+            child: new Text(
+              message,
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.white,
+              ),
+            ),
           ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
