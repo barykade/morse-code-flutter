@@ -13,6 +13,12 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(chatroom.name)),
       body: _buildBody(context),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () {
+
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -50,7 +56,7 @@ class ChatScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(5.0),
           ),
           child: ListTile(
-            title: Text(message.toString())         ),
+              title: Text(message.toString())         ),
         ));
   }
 
