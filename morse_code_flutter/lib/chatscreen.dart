@@ -40,18 +40,20 @@ class ChatScreen extends State {
             tapDownTime = new DateTime.now().millisecondsSinceEpoch;
           });
 
-          String character = "";
-          int timeSinceTapUp = tapDownTime - tapUpTime;
-          if (timeSinceTapUp > spaceTime){
-            character = "//";
-          }else if (timeSinceTapUp > slashTime){
-            character = "/";
+          if (tapUpTime != 0) {
+            String character = "";
+            int timeSinceTapUp = tapDownTime - tapUpTime;
+            if (timeSinceTapUp > spaceTime) {
+              character = "//";
+            } else if (timeSinceTapUp > slashTime) {
+              character = "/";
+            }
+            setState(() {
+              message = message + character;
+            });
           }
-          setState(() {
-            message = message + character;
-          });
         },
-        onTapUp: (tapUpDetails) {
+        onTapUp: (tapUpDetails) async {
           setState(() {
             tapUpTime = new DateTime.now().millisecondsSinceEpoch;
           });
@@ -65,6 +67,13 @@ class ChatScreen extends State {
           setState(() {
             message = message + character;
           });
+
+          await new Future.delayed(Duration(milliseconds: sendTime));
+          if (new DateTime.now().millisecondsSinceEpoch - tapDownTime > sendTime){
+            setState(() {
+              message = "";
+            });
+          }
         },
         child: new Container(
           padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
