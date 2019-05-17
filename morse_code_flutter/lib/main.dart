@@ -83,10 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final record = Record.fromSnapshot(data);
+    final chatroom = ChatRoom.fromSnapshot(data);
 
     return Padding(
-      key: ValueKey(record.name),
+      key: ValueKey(chatroom.name),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
@@ -94,12 +94,12 @@ class _MyHomePageState extends State<MyHomePage> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: ListTile(
-          title: Text(record.name),
+          title: Text(chatroom.name),
           onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Chat(name: record.name,),
+                  builder: (context) => Chat(name: chatroom.name,),
                 ));
           },
       ),
@@ -107,19 +107,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Record {
+class ChatRoom {
   final String name;
   final DocumentReference reference;
 
-  Record.fromMap(Map<String, dynamic> map, {this.reference})
+  ChatRoom.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['name'] != null),
         name = map['name'];
 
-  Record.fromSnapshot(DocumentSnapshot snapshot)
+  ChatRoom.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "Record<$name>";
+  String toString() => "ChatRoom<$name>";
 }
 
 class Chat extends StatelessWidget {
