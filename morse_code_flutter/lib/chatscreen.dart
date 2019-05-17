@@ -13,10 +13,15 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(chatroom.name)),
       body: _buildBody(context),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () {
-
-        },
+      floatingActionButton: new Container(
+        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          width: 800.0,
+          height: 100.0,
+          child: new RawMaterialButton(
+            elevation: 0.0,
+            fillColor: Colors.blue,
+            onPressed: () {},
+          ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
