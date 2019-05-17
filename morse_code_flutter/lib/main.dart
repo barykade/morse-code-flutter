@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main(){
+  runApp(new MaterialApp(
+    home: new MyApp(),
+  ));
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -15,7 +19,18 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(title: Text('ListViews')),
         body: BodyLayout(),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (_) => new SimpleDialog(
+                  title: new Text('Do you like Flutter?'),
+                  children: <Widget>[
+                    new SimpleDialogOption(child: new Text('Yes'),onPressed: (){Navigator.pop(context);},),
+                    new SimpleDialogOption(child: new Text('No'),onPressed: (){Navigator.pop(context);},),
+                  ],
+                )
+            );
+          },
           child: Icon(Icons.add),
         ),
       ),
