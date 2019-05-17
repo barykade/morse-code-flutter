@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lamp/lamp.dart';
 
 class ChatScreenStateful extends StatefulWidget {
   
@@ -129,13 +130,19 @@ class ChatScreen extends State {
     return Padding(
         key: ValueKey(message.text),
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(5.0),
+        child: new RawMaterialButton(
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            child: ListTile(
+                title: Text(message.toString())
+            ),
           ),
-          child: ListTile(
-              title: Text(message.toString())         ),
+          onPressed: () {
+            //TODO: Play message
+          },
         ));
   }
 
