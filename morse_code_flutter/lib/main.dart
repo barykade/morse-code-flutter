@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -6,71 +7,87 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'ListViews',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-      ),
-      home: Scaffold(
-        appBar: AppBar(title: Text('ListViews')),
-        body: BodyLayout(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: Icon(Icons.add),
-        ),
-      ),
+      title: 'Baby Names',
+      home: MyHomePage(),
     );
-
   }
 }
 
-class BodyLayout extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return _myListView(context);
+  _MyHomePageState createState() {
+    return _MyHomePageState();
   }
 }
 
-Widget _myListView(BuildContext context) {
-
-  // backing data
-  final friends = ['Jake', 'DJ', 'Tyler'];
-  final messages = ['hey', 'you', 'what\'s your number'];
-  final timeSinceLast = ['15 mins', '6 hrs', 'Thu'];
-
-  return ListView.builder(
-    itemCount: friends.length,
-    itemBuilder: (context, index) {
-      return ListTile(
-        leading: Icon(Icons.wb_sunny),
-        title: Text(friends[index]),
-        subtitle: Text(messages[index]),
-        trailing: Text(timeSinceLast[index]),
-        onTap: () {
-          String friend = friends[index];
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Chat(name: friend,),
-              ));
-        },
-      );
-    },
-  );
-
-}
-
-class Chat extends StatelessWidget {
-
-  final String name;
-
-  // receive data from the FirstScreen as a parameter
-  Chat({Key key, @required this.name}) : super(key: key);
-
+class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(name)),
+      appBar: AppBar(title: Text('Baby Name Votes')),
+      body: _buildBody(context),
     );
   }
+
+  Widget _buildBody(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('baby').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+
+        return _buildList(context, snapshot.data.documents);
+      },
+    );
+  }
+
+  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+    return ListView(
+      padding: const EdgeInsets.only(top: 20.0),
+      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+    );
+  }
+
+  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+    final record = Record.fromSnapshot(data);
+
+    return Padding(
+      key: ValueKey(record.name),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+        child: ListTile(
+          title: Text(record.name),
+          trailing: Text(record.votes.toString()),
+
+          onTap: () => Firestore.instance.runTransaction((transaction) async {
+            final freshSnapshot = await transaction.get(record.reference);
+            final fresh = Record.fromSnapshot(freshSnapshot);
+
+            await transaction
+                .update(record.reference, {'votes': fresh.votes + 1});
+          }),
+      ),
+    ));
+  }
+}
+
+class Record {
+  final String name;
+  final int votes;
+  final DocumentReference reference;
+
+  Record.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['name'] != null),
+        assert(map['votes'] != null),
+        name = map['name'],
+        votes = map['votes'];
+
+  Record.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, reference: snapshot.reference);
+
+  @override
+  String toString() => "Record<$name:$votes>";
 }
