@@ -42,10 +42,11 @@ Widget _myListView(BuildContext context) {
         subtitle: Text(messages[index]),
         trailing: Text(timeSinceLast[index]),
         onTap: () {
+          String friend = friends[index];
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SecondScreen(),
+                builder: (context) => SecondScreen(name: friend,),
               ));
         },
       );
@@ -55,14 +56,20 @@ Widget _myListView(BuildContext context) {
 }
 
 class SecondScreen extends StatelessWidget {
+
+  final String name;
+
+  // receive data from the FirstScreen as a parameter
+  SecondScreen({Key key, @required this.name}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Second screen')),
+      appBar: AppBar(title: Text(name)),
       body: Center(
         child: RaisedButton(
           child: Text(
-            'Go back to first screen',
+            'Go Back',
             style: TextStyle(fontSize: 24),
           ),
           onPressed: () {
