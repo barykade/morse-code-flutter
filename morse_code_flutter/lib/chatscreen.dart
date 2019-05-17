@@ -69,8 +69,14 @@ class ChatScreen extends State {
           });
 
           await new Future.delayed(Duration(milliseconds: sendTime));
-          if (new DateTime.now().millisecondsSinceEpoch - tapDownTime > sendTime){
+          int timeNow = new DateTime.now().millisecondsSinceEpoch;
+          if (timeNow - tapDownTime > sendTime){
             setState(() {
+              Firestore.instance.collection('messages').add(<String, dynamic> {
+                "added_at": timeNow.toString(),
+                "text": message,
+                "chatroom": chatroom.reference
+              });
               message = "";
             });
           }
