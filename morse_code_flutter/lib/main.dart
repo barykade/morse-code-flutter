@@ -7,7 +7,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Baby Names',
+      title: 'Chat Rooms',
       home: MyHomePage(),
     );
   }
@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Baby Name Votes')),
+      appBar: AppBar(title: Text('Chat Rooms')),
       body: _buildBody(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -95,7 +95,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: ListTile(
           title: Text(record.name),
-          trailing: Text('test'),
           onTap: () {
             Navigator.push(
                 context,
