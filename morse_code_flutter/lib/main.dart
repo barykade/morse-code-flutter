@@ -92,11 +92,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListTile(
           title: Text(record.name),
           trailing: Text('test'),
-
-          onTap: () => Firestore.instance.runTransaction((transaction) async {
-            final freshSnapshot = await transaction.get(record.reference);
-            final fresh = Record.fromSnapshot(freshSnapshot);
-          }),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Chat(name: record.name,),
+                ));
+          },
       ),
     ));
   }
@@ -115,4 +117,19 @@ class Record {
 
   @override
   String toString() => "Record<$name>";
+}
+
+class Chat extends StatelessWidget {
+
+  final String name;
+
+  // receive data from the FirstScreen as a parameter
+  Chat({Key key, @required this.name}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(name)),
+    );
+  }
 }
