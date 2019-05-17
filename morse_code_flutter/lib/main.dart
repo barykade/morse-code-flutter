@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:morse_code_flutter/chatscreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -99,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Chat(name: chatroom.name,),
+                  builder: (context) => ChatScreen(name: chatroom.name),
                 ));
           },
       ),
@@ -120,19 +121,4 @@ class ChatRoom {
 
   @override
   String toString() => "ChatRoom<$name>";
-}
-
-class Chat extends StatelessWidget {
-
-  final String name;
-
-  // receive data from the FirstScreen as a parameter
-  Chat({Key key, @required this.name}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(name)),
-    );
-  }
 }
