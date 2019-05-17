@@ -38,6 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
               new FlatButton(
                 child: new Text('SUBMIT'),
                 onPressed: () {
+                  Firestore.instance.collection('chatrooms').add(<String, dynamic> {
+                    "name":_textFieldController.text,
+                  });
+                  _textFieldController.clear();
                   Navigator.of(context).pop();
                 },
               )
