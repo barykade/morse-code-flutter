@@ -27,6 +27,7 @@ class ChatScreen extends State {
   int tapDownTime = 0;
   int tapUpTime = 0;
 
+  int lastMessage = 0;
   final ChatRoom chatroom;
 
   // receive data from the FirstScreen as a parameter
@@ -76,7 +77,7 @@ class ChatScreen extends State {
           if (timeNow - tapDownTime > sendTime){
             setState(() {
               Firestore.instance.collection('messages').add(<String, dynamic> {
-                "added_at": timeNow.toString(),
+                "added_at": timeNow,
                 "text": message,
                 "chatroom": chatroom.reference
               });
@@ -105,14 +106,15 @@ class ChatScreen extends State {
   }
 
   Widget _buildBody(BuildContext context) {
+
+    var messagesQuery = Firestore.instance.collection('messages')
+        .where("chatroom", isEqualTo: chatroom.reference)
+        .orderBy('added_at', descending: true);
+
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('messages')
-          .where("chatroom", isEqualTo: chatroom.reference)
-          .orderBy('added_at', descending: true)
-          .snapshots(),
+      stream: messagesQuery.snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-
         return buildMessagesWidget(context, snapshot.data.documents);
       },
     );
@@ -143,26 +145,27 @@ class ChatScreen extends State {
             ),
           ),
           onPressed: () async {
-            String messageString = message.toString();
-
-            for (int i = 0; i < messageString.length; i++) {
-              var character = messageString[i];
-              if (character == "."){
-                await playDot();
-              }else if (character == "-"){
-                await playDash();
-              }else if (character == "/"){
-                await playSlash();
-              }
-            };
+            await play(message.toString());
           },
         ));
   }
 
+  static Future play(String messageString) async{
+    for (int i = 0; i < messageString.length; i++) {
+      var character = messageString[i];
+      if (character == "."){
+        await playDot();
+      }else if (character == "-"){
+        await playDash();
+      }else if (character == "/"){
+        await playSlash();
+      }
+    }
+  }
   static const MethodChannel _channel = const MethodChannel('vibrate');
 
-  Duration dotTimeDuration = Duration(milliseconds: dotTime);
-  Future playDot() async {
+  static Duration dotTimeDuration = Duration(milliseconds: dotTime);
+  static Future playDot() async {
     print(".");
     Lamp.turnOn();
     _channel.invokeMethod('vibrate', {"duration": dotTime});
@@ -171,8 +174,8 @@ class ChatScreen extends State {
     });
   }
 
-  Duration dashTimeDuration = Duration(milliseconds: dashTime);
-  Future playDash() async {
+  static Duration dashTimeDuration = Duration(milliseconds: dashTime);
+  static Future playDash() async {
     Lamp.turnOn();
     _channel.invokeMethod('vibrate', {"duration": dashTime});
     return new Future.delayed(dashTimeDuration ).then((_) {
@@ -180,8 +183,8 @@ class ChatScreen extends State {
     });
   }
 
-  Duration slashTimeDuration = Duration(milliseconds: slashTime);
-  Future playSlash() async {
+  static Duration slashTimeDuration = Duration(milliseconds: slashTime);
+  static Future playSlash() async {
     print("/");
     return new Future.delayed(Duration(milliseconds: slashTime));
   }
@@ -189,15 +192,24 @@ class ChatScreen extends State {
 }
 
 class Message {
-  final DocumentReference reference;
-  final DocumentReference chatroom;
-  final String text;
+  DocumentReference reference;
+  DocumentReference chatroom;
+  String text;
+  int added;
+  static int lastMessage = new DateTime.now().millisecondsSinceEpoch;
 
-  Message.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['text'] != null),
-        text = map['text'],
-        assert(map['chatroom'] != null),
-        chatroom = map['chatroom'];
+  Message.fromMap(Map<String, dynamic> map, {this.reference}){
+      assert(map['text'] != null);
+      text = map['text'];
+      assert(map['chatroom'] != null);
+      chatroom = map['chatroom'];
+      assert(map['added_at'] != null);
+      added = map['added_at'];
+      if(lastMessage != 0 && added > lastMessage){
+        lastMessage = added;
+        ChatScreen.play(text);
+      }
+  }
 
   Message.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
