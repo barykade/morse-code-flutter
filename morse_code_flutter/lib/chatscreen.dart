@@ -16,6 +16,7 @@ class ChatScreenStateful extends StatefulWidget {
 
 class ChatScreen extends State {
 
+  final dotTime = 30;
   final dashTime = 150;
   final slashTime = 800;
   final spaceTime = 2000;
@@ -141,11 +142,39 @@ class ChatScreen extends State {
             ),
           ),
           onPressed: () {
-            //TODO: Play message
+            message.toString().runes.forEach((int rune) async {
+              var character=new String.fromCharCode(rune);
+              if (character == "."){
+                playDot();
+                await new Future.delayed(Duration(milliseconds: dotTime));
+              }else if (character == "-"){
+                playDash();
+                await new Future.delayed(Duration(milliseconds: dashTime));
+              }else if (character == "/"){
+                playSlash();
+                await new Future.delayed(Duration(milliseconds: slashTime));
+              }
+              await new Future.delayed(Duration(milliseconds: dotTime));
+            });
           },
         ));
   }
 
+  Future playDot() async {
+    Lamp.turnOn();
+    await new Future.delayed(Duration(milliseconds: dotTime));
+    Lamp.turnOff();
+  }
+
+  Future playDash() async {
+    Lamp.turnOn();
+    await new Future.delayed(Duration(milliseconds: dashTime));
+    Lamp.turnOff();
+  }
+
+  Future playSlash() async {
+    //do nothing.
+  }
 
 }
 
